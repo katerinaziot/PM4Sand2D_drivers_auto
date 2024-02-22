@@ -4,6 +4,7 @@
 ### Structure
 
 - Three folder structure (for now)
+- building on katerinaziot/PM4Sand_drivers_auto for FLAC2D this time. Working with *.csv files now.
 - PM4Sand2D* folders contain drivers and processing* folder contains post-processing and plotting files
 - Each PM4Sand* folder provides the ability to create multiple FLAC *.f2fis drivers that cover various parameters and are named accordingly. A batch*.fis file is also produced that can be directly called in FLAC2D that will run them all and produce csv files with results in the same folder.
 - Each plotting*.py file in the "processing_plotting" folder will process different drivers and produce Figures. Decode python file contains useful functions for all and ucdavis.mplstyle is used for figure styling.
