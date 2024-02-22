@@ -1,0 +1,17 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Ziotopoulou
+    given-names: Katerina
+    orcid: https://orcid.org/0000-0001-5494-497X
+  - family-names: Boulanger
+    given-names: Ross
+    orcid: https://orcid.org/0000-0002-2518-901X
+  - family-names: Kippen
+    given-names: Marie-Pierre
+    orcid:
+title: "PM4Sand2D drivers for automization"
+version: 1.0.0
+doi: 
+url: "https://github.com/katerinaziot/PM4Sand2D_drivers_auto/"
+date-released: 2024-02-22
