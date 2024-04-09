@@ -30,7 +30,7 @@ from   decode_PM4Sand2DDrivers import (power_fit, decode_name, create_file_list)
 plt.style.use('default')
 plt.style.use('ucdavis.mplstyle')
 # 
-search_string = "./../PM4Sand_Cyclic_DSS_undrained_batch/*.csv"
+search_string = "./../PM4Sand2D_Cyclic_DSS_undrained_batch/*.csv"
 # The start location takes you to the beginning of the file string (goes past the folder/)
 start_loc     = 40
 all_files     = glob.glob(search_string)
