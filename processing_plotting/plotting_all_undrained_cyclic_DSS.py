@@ -4,6 +4,7 @@
 Created on Mon Feb 5 2024
 
 @author: kziot
+Updated April 9, 2024
 
 - with reference to the PM4Sand manual produces Figures 4.2 to 4.11
 - modified from equivalent files for PM4Sand for FLAC 8.1
@@ -24,7 +25,8 @@ import numpy as np
 import glob
 import pandas as pd
 import matplotlib.pyplot as plt
-from   matplotlib.ticker     import (AutoMinorLocator, MultipleLocator)
+from   matplotlib.ticker import (AutoMinorLocator, MultipleLocator)
+from   matplotlib.lines  import Line2D
 from   decode_PM4Sand2DDrivers import (power_fit, decode_name, create_file_list)
 
 plt.style.use('default')
@@ -81,6 +83,10 @@ color_Ko_dict    = {'1.2': 'teal', '0.3': 'mediumvioletred', '0.5': 'darkviolet'
 # Marker style for Ko’s 
 mar_Ko_dict      = {'0.3': 'o', '0.5': '^', '0.8': 's', '1.2': 'd'}
 #== ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** 
+#== ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** 
+# Figure numbers correspond to PM4Sand Manual
+#== ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** 
+
 # create_file_list(fileList,start_loc, driverType = [], testType  = [], drainType = [], 
                                      # density    = [], extraInfo = [], output    = [])
 
@@ -148,7 +154,7 @@ for fileind, filelist in enumerate(filelist_ar):
                     axis.text(0.05, 0.05, text2, transform=axis.transAxes,
                               bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad = 2))
                 if col == 1:
-                    axis.set_xlabel("Vertical Effective Stress, $σ'_v$/$σ'_{vc}$")
+                    axis.set_xlabel("Vertical effective stress ratio, $σ'_v$ /$σ'_{vc}$")
                 
                 if col == 0 and row == 0:
                     axis.set_xlim(-6,6)
