@@ -32,7 +32,7 @@ from   decode_PM4Sand2DDrivers import (power_fit, decode_name, create_file_list)
 plt.style.use('default')
 plt.style.use('ucdavis.mplstyle')
 # 
-search_string = "./../PM4Sand2D_Cyclic_DSS_undrained_batch/*.csv"
+search_string = "./../PM4Sand2D_Cyclic_DSS_undrained_batch/results/*.csv"
 # The start location takes you to the beginning of the file string (goes past the folder/)
 start_loc     = 40
 all_files     = glob.glob(search_string)
@@ -83,7 +83,6 @@ color_Ko_dict    = {'1.2': 'teal', '0.3': 'mediumvioletred', '0.5': 'darkviolet'
 # Marker style for Ko’s 
 mar_Ko_dict      = {'0.3': 'o', '0.5': '^', '0.8': 's', '1.2': 'd'}
 #== ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** 
-#== ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** 
 # Figure numbers correspond to PM4Sand Manual
 #== ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** == ** 
 
@@ -103,6 +102,7 @@ Fig44_files = create_file_list(all_files,start_loc, [],[],[],['75'],[['1'],['0.0
 
 skip = 1  # 1 implies skipping no rows - can increase if slow
 
+# Three figures with stress-strain loops and stress paths for 35, 55, 75
 filelist_ar = [Fig42_files, Fig43_files, Fig44_files]
 
 for fileind, filelist in enumerate(filelist_ar):
@@ -113,16 +113,8 @@ for fileind, filelist in enumerate(filelist_ar):
         alpha = extra[1][1:]
         Ko    = extra[2][2:]
         
-        #---- TEMPORARY FIX TO STRESS PATHS IN DRIVERS NOT STARTING AT 1 ------
-        # df = pd.read_table(file, header = 0, 
-        #             usecols = ['shear_strain', 'CSR', 'sigv/sigvo'],
-        #             delim_whitespace=True, skiprows=lambda x: x > 3 and x % skip)        
-
         df = pd.read_csv(file, header = 0,  usecols = ['Shear_strain_%','CSR','sigv/sigvo'],skiprows=range(1,3))
         
-        #df = pd.read_csv(file, header = 0, 
-        #            usecols = ['Shear_strain_%','CSR','sigv/sigvo'],
-        #           delim_whitespace=True, skiprows=range(1, 3))
         #----------------------------------------------------------------------
 
         axs_row = alpha_dict[alpha]
@@ -171,6 +163,8 @@ for fileind, filelist in enumerate(filelist_ar):
     plt.show()
     plt.close()
 #%%
+# One figure with zoomed in stress-strain loops for 35, 55, 75
+
 #-----------------------------------------------------------------------------------------
 # 1) entry 1: empty (they are all DSS anyways - nothing to filter)
 # 2) entry 2: empty (they are all cyc anyways - nothing to filter))
@@ -178,6 +172,7 @@ for fileind, filelist in enumerate(filelist_ar):
 # 4) entry 4: empty so that it reads all densities
 # 5) entry 5  has three parts: Part 1 = overburdens, Part 2 = alphas, Part 3 = Ko
 # 6) empty 6: read element 3 that is exercised under the CRR
+
 
 Fig45_files = create_file_list(all_files,start_loc, [],[],[],[],[['1'],['0.0'],['0.5']],['3'])
 
@@ -219,6 +214,7 @@ plt.savefig(savefigname, dpi = 600, bbox_inches = 'tight')
 plt.show()
 plt.close()
 # %%
+# One figure CSR - Ncyc for 100kPa, all Dr, various triggering criteria
 #-----------------------------------------------------------------------------------------
 # 1) entry 1: empty (they are all DSS anyways - nothing to filter)
 # 2) entry 2: empty (they are all cyc anyways - nothing to filter))
@@ -229,75 +225,101 @@ plt.close()
 
 Fig46_files = create_file_list(all_files,start_loc, [],[],[],[],[['1'],['0.0'],['0.5']],['csrN'])
 
-fig, axs = plt.subplots(nrows = 3, ncols = 1, figsize=(4,7.5), squeeze = False)
+# Define the desired order of density labels
+density_order = ['35', '55', '75']
+
+fig, axs = plt.subplots(nrows=3, ncols=1, figsize=(4, 7.5), squeeze=False)
+
+# Dictionary to store custom legend handles and labels for each density value
+legend_dict = {density: {'handle': None, 'label': None} for density in density_order}
 
 for ind, file in enumerate(Fig46_files):
-    [driver, goal, water, density, extra, output] = decode_name(file,start_loc)
+    [driver, goal, water, density, extra, output] = decode_name(file, start_loc)
     
-    df = pd.read_csv(file, header = 0)
+    df = pd.read_csv(file, header=0)
         
     ##need to get fits from points: CSR versus cycNum
     pts = 100    
-    if len(df[df['Ncyc_to_98%_ru']>0]) >= 3:  # need at least three points to fit properly
-        [ind_1p, amp_1p, s1p_x, s1p_y] = power_fit(df,'Ncyc_to_98%_ru','CSR',pts)
-        axs[0,0].plot(s1p_x, s1p_y, color = 'grey', ls = "--")
-        axs[0,0].text(0.99*s1p_x[int(pts*0.05)], 1.15*s1p_y[int(pts*0.05)], "b = {:.2f}".format(-ind_1p),
-                      bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad = 1))
+    if len(df[df['Ncyc_to_98%_ru'] > 0]) >= 3:  # need at least three points to fit properly
+        [ind_1p, amp_1p, s1p_x, s1p_y] = power_fit(df, 'Ncyc_to_98%_ru', 'CSR', pts)
+        axs[0, 0].plot(s1p_x, s1p_y, color='grey', ls="--")
+        axs[0, 0].text(0.99 * s1p_x[int(pts * 0.05)], 1.15 * s1p_y[int(pts * 0.05)], "b = {:.2f}".format(-ind_1p),
+                       bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad=1))
     
-    df.plot(ax=axs[0,0], x = 'Ncyc_to_98%_ru', y = 'CSR',
-            linestyle = "None", color = 'black',
-            marker = mar_dens_dict[density],
-            ms = 4* 1,
-            alpha = 1,
-            label = "$D_R$ = " + density + "%")
-    #axs[1,0].text(0.8, 0.025+round(df['CSR'].max(),2), "$D_R$ =" + density + "%")
-#-------------------------------------------------------------------- 
-    if len(df[df['Ncyc_to_1%_strain']>0]) >= 3: #need at least three points to fit properly
-        [ind_3p, amp_3p, s3p_x, s3p_y] = power_fit(df,'Ncyc_to_1%_strain','CSR',pts) 
-        axs[1,0].plot(s3p_x, s3p_y, color = 'grey', ls = "--")
-        axs[1,0].text(s3p_x[int(pts*0.05)], 1.15*s3p_y[int(pts*0.05)], "b = {:.2f}".format(-ind_3p),
-                      bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad = 1))
+    plot_handle, = axs[0, 0].plot(s1p_x, s1p_y, color='grey', ls="--", label=None)  # Save handle for custom legend
+    if density not in legend_dict or legend_dict[density]['handle'] is None:
+        legend_dict[density]['handle'] = plot_handle
+        legend_dict[density]['label'] = "$D_R$ = " + density + "%"
     
-    df.plot(ax=axs[1,0], x = 'Ncyc_to_1%_strain', y = 'CSR',
-            linestyle = "None", color = 'black',
-            marker = mar_dens_dict[density],
-            ms = 4* 1, alpha = 1,
-            label = "$D_R$ = " + density + "%")
-#-------------------------------------------------------------------- 
-    if len(df[df['Ncyc_to_3%_strain']>0]) >= 3: #need at least three points to fit properly
-        [ind_ru, amp_ru, ru_x, ru_y] = power_fit(df,'Ncyc_to_3%_strain','CSR',pts)
-        axs[2,0].plot(ru_x, ru_y, color = 'grey', ls = "--")
-        axs[2,0].text(ru_x[int(pts*0.05)], 1.15*ru_y[int(pts*0.05)], "b = {:.2f}".format(-ind_ru),
-                      bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad = 1))
+    df.plot(ax=axs[0, 0], x='Ncyc_to_98%_ru', y='CSR',
+            linestyle="None", color='black',
+            marker=mar_dens_dict[density],
+            ms=4 * 1,
+            alpha=1,
+            label=None)
+    #--------------------------------------------------------------------
+    if len(df[df['Ncyc_to_1%_strain'] > 0]) >= 3: #need at least three points to fit properly
+        [ind_3p, amp_3p, s3p_x, s3p_y] = power_fit(df, 'Ncyc_to_1%_strain', 'CSR', pts) 
+        axs[1, 0].plot(s3p_x, s3p_y, color='grey', ls="--")
+        axs[1, 0].text(s3p_x[int(pts * 0.05)], 1.15 * s3p_y[int(pts * 0.05)], "b = {:.2f}".format(-ind_3p),
+                       bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad=1))
+    
+    plot_handle, = axs[1, 0].plot(s3p_x, s3p_y, color='grey', ls="--", label=None)  # Save handle for custom legend
+    if density not in legend_dict or legend_dict[density]['handle'] is None:
+        legend_dict[density]['handle'] = plot_handle
+        legend_dict[density]['label'] = "$D_R$ = " + density + "%"
+    
+    df.plot(ax=axs[1, 0], x='Ncyc_to_1%_strain', y='CSR',
+            linestyle="None", color='black',
+            marker=mar_dens_dict[density],
+            ms=4 * 1, alpha=1,
+            label=None)
+    #--------------------------------------------------------------------
+    if len(df[df['Ncyc_to_3%_strain'] > 0]) >= 3: #need at least three points to fit properly
+        [ind_ru, amp_ru, ru_x, ru_y] = power_fit(df, 'Ncyc_to_3%_strain', 'CSR', pts)
+        axs[2, 0].plot(ru_x, ru_y, color='grey', ls="--")
+        axs[2, 0].text(ru_x[int(pts * 0.05)], 1.15 * ru_y[int(pts * 0.05)], "b = {:.2f}".format(-ind_ru),
+                       bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad=1))
 
-    df.plot(ax=axs[2,0], x = 'Ncyc_to_3%_strain', y = 'CSR',
-            linestyle = "None", color = 'black',
-            marker = mar_dens_dict[density],
-            ms = 4 * 1,
-            alpha = 1,
-            label = "$D_R$ = " + density + "%")
-#-------------------------------------------------------------------- 
-for row,axes in enumerate(axs):
-    for col, axis in enumerate(axes): 
-        axis.set_ylabel("Cyclic Stress Ratio")
+    plot_handle, = axs[2, 0].plot(ru_x, ru_y, color='grey', ls="--", label=None)  # Save handle for custom legend
+    if density not in legend_dict or legend_dict[density]['handle'] is None:
+        legend_dict[density]['handle'] = plot_handle
+        legend_dict[density]['label'] = "$D_R$ = " + density + "%"
+    
+    df.plot(ax=axs[2, 0], x='Ncyc_to_3%_strain', y='CSR',
+            linestyle="None", color='black',
+            marker=mar_dens_dict[density],
+            ms=4 * 1,
+            alpha=1,
+            label=None)
+    #--------------------------------------------------------------------
+
+# Create custom legend handles with desired markers
+custom_legend_handles = [Line2D([0], [0], marker=mar_dens_dict[density], color='black', markersize=5, linestyle='None')
+                         for density in density_order]
+custom_legend_labels = ["$D_R$ = " + density + "%" for density in density_order]
+
+# Adjustments for each subplot
+for row, axes in enumerate(axs):
+    for axis in axes:
+        axis.set_ylabel("Cyclic Stress Ratio (CSR)")
         axis.set_xlabel("Number of uniform cycles")
-        axis.set_xlim(1,100);  axis.set_ylim(0, 0.6)
+        axis.set_xlim(1, 100)
+        axis.set_ylim(0, 0.6)
         axis.set_xscale('log')
-        axis.legend(loc = "upper left")
-        text2 = "$σ'_{vc}$ = 100 kPa\n"
-        text2 = text2 + "{}".format(row_liq_dict[row])
-        axis.text(0.95, 0.95, text2, transform=axis.transAxes, va = "top", ha = "right",
-                      bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad = 2))
+        axis.legend(custom_legend_handles, custom_legend_labels, loc="upper left")
+        text2 = "$σ'_{vc}$ = 100 kPa\n" + "{}".format(row_liq_dict[row])
+        axis.text(0.95, 0.95, text2, transform=axis.transAxes, va="top", ha="right",
+                  bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad=2))
         axis.yaxis.set_major_locator(MultipleLocator(.2))
-        axis.yaxis.set_minor_locator(AutoMinorLocator(n = 2))
-        axis.grid(which = "minor", axis = "x", lw = 0.2)
-
+        axis.yaxis.set_minor_locator(AutoMinorLocator(n=2))
+        axis.grid(which="minor", axis="x", lw=0.2)
 
 plt.subplots_adjust()
 savefigname = "Fig4-6.png"
-plt.savefig(savefigname, dpi = 600, bbox_inches = 'tight')
+plt.savefig(savefigname, dpi=600, bbox_inches='tight')
 plt.show()
-plt.close()
+
 #%%
 #-----------------------------------------------------------------------------------------
 # Entry 5  has three parts: Part 1 = overburdens - get them all for Ksigma 
@@ -327,7 +349,7 @@ for ind, file in enumerate(Fig47_files):
 
 for row,axes in enumerate(axs):
     for col, axis in enumerate(axes): 
-        axis.set_ylabel("Cyclic Stress Ratio to γ = 3%")
+        axis.set_ylabel("Cyclic Stress Ratio")
         axis.set_xlabel("Number of uniform cycles")
         axis.set_xlim(1,100)
         axis.set_ylim(0, 0.6)
@@ -441,7 +463,7 @@ axs.annotate("75%", c = "dimgrey", xy=(8.7, 0.62),
 # =====================================================================#
 # Finish plot details
 axs.set_ylabel("$K_σ$")
-axs.set_xlabel("Vertical effective stress, $σ'_{vc}$/$P_{atm}$")
+axs.set_xlabel("Vertical effective stress, $σ'_{vc}$ /$P_{atm}$")
 
 axs.set_xlim(0,10)
 axs.set_ylim(0, 1.4)
@@ -456,6 +478,7 @@ savefigname = "Fig4-8.png"
 plt.savefig(savefigname, dpi = 600, bbox_inches = 'tight')
 plt.show()
 plt.close()
+#%%
 #-----------------------------------------------------------------------------------------
 Fig49_files = create_file_list(all_files,start_loc, [],[],[],[],[['1'],['0.0','0.1','0.2','0.3'],['0.5']],['csrN'])
 
@@ -483,7 +506,7 @@ handles, labels = axs[0,0].get_legend_handles_labels()
 handles = [handles[-1]] + handles[0:-1]
 for row,axes in enumerate(axs):
     for col, axis in enumerate(axes): 
-        axis.set_ylabel("Cyclic Stress Ratio to γ = 3%")
+        axis.set_ylabel("Cyclic Stress Ratio")
         axis.set_xlabel("Number of uniform cycles")
         axis.set_xlim(1,100)
         axis.set_ylim(0, 0.6)
@@ -491,6 +514,7 @@ for row,axes in enumerate(axs):
         axis.yaxis.set_major_locator(MultipleLocator(.2))
         axis.set_xscale('log')
         text2 = "$D_R$ = {}%\n".format(location_dens_dict[row])
+        text2 = text2 + "3% shear strain\n"
         text2 = text2 + "$σ'_{vc}$ = 100 kPa"
         axis.text(0.95, 0.95, text2, transform=axis.transAxes, va = 'top', ha = 'right',
                       bbox=dict(facecolor='white', edgecolor='none', alpha=1, pad = 2))
@@ -541,12 +565,17 @@ df_summary.sort_values(by=['alpha'], inplace = True)
 for d in [35,55,75]:
     for s in [1,4]:
         plot_df = df_summary[(df_summary['dens']==d) & (df_summary['sig']==s)]
-        plot_df.plot(ax = axs,
+        if ((d == 35) and (s == 4)):
+            # The Dr35% at 4 atm and alpha = 0.3 is flowing so I'm excluding it
+            plot_df_filtered = plot_df[:-1]  
+        else:
+            plot_df_filtered = plot_df
+
+        plot_df_filtered.plot(ax = axs,
                     x = 'alpha', y = 'csr_3p',
                     fillstyle  = fill_sigvc_dict[s],
                     marker     = mar_dens_dict[d],
                     markersize = 6,
-                    # color = col_dens_dict[d],
                     color = color_sigvc_dict[str(s)],
                     linestyle = "-",
                     legend = False)
@@ -576,6 +605,7 @@ axs.set_xlabel("Static shear stress ratio, α =$τ_{static}$/$σ'_{vc}$")
 
 axs.set_xlim(0, 0.4)
 axs.set_ylim(0, 0.5)
+
 axs.xaxis.set_major_locator(MultipleLocator(.1))
 axs.yaxis.set_minor_locator(AutoMinorLocator(n = 2))
 axs.xaxis.set_minor_locator(AutoMinorLocator(n = 2))
@@ -607,12 +637,13 @@ for ind, file in enumerate(Fig411_files):
     
 for row,axes in enumerate(axs):
     for col, axis in enumerate(axes): 
-        axis.set_ylabel("Cyclic Stress Ratio to γ = 3%")
+        axis.set_ylabel("Cyclic Stress Ratio")
         axis.set_xlabel("Number of uniform cycles")
         axis.set_xlim(1,100)
         axis.set_ylim(0, 0.6)
         axis.set_xscale('log')
         text2 = "$D_R$ = {}%\n".format(location_dens_dict[row])
+        text2 = text2 + "3% shear strain\n"
         text2 = text2 + "$σ'_{vc}$ = 100 kPa\n"
         text2 = text2 + "α = 0.0"
         axis.text(0.95, 0.95, text2, transform=axis.transAxes, va = 'top', ha = 'right',
