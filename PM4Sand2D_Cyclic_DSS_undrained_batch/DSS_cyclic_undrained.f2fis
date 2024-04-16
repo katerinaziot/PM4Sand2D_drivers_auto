@@ -238,10 +238,14 @@ fish define $apply_static
             end_command
         end_if
     end_loop
+    ; Optional to reset the initial back-stress ratios 
+    if $flag_on_FirstCall = 0
+        command
+            zone property First_Call 0 range group "soil"
+        end_command
+    end_if
 end
 [$apply_static]
-
-;program echo on
 
 ;--------------------------------------------------------------------------------------------------
 ;   Reset Kwater prior to further shearing
@@ -260,8 +264,6 @@ end
 ;   -  Optional to reset the initial back-stress ratios at end of consolidation
 ;   -  Set displacements to start for zero for stress-strain responses
 ;--------------------------------------------------------------------------------------------------
-zone property First_Call 0 range group "soil"
-
 zone gridpoint initialize displacement 0.0 0.0
 ;model save "initial_w_bias"
 

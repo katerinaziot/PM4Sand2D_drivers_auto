@@ -26,17 +26,12 @@ TestName = "uDSS"    # will match template and Driver and built upon that
 
 # Create arrays of values to be varied across all Drivers
 # Produced files will be named accordingly
-# Dr       = [0.35, 0.55, 0.75]       # Relative Density
-# sig_vc   = [1, 4, 8]                # initial overburden stress
-# alpha    = [0.0, 0.1, 0.2, 0.3]     # static shear stress bias ratio
-# Ko       = [0.5]                    # coefficient of lateral earth pressures at rest
 
-Dr      = [0.35, 0.55, 0.75]         # Relative Density
-#sig_vc  = [1,4,8]                      # initial overburden stress
-sig_vc = [1]
-#alpha   = [0.0,0.1,0.2,0.3]            # static shear stress bias ratio
-alpha  = [0.0]
-Ko     = [0.3,0.8,1.2]          # coefficient of lateral earth pressures at rest
+Dr       = [0.35, 0.55, 0.75]         # Relative Density
+sig_vc   = [1,4,8]                    # initial overburden stress
+alpha   = [0.0,0.1,0.2,0.3]          # static shear stress bias ratio
+#alpha    = [0.0]                      # static shear stress bias ratio
+Ko       = [0.3,0.8,1.2]              # coefficient of lateral earth pressures at rest
 #Ko      = [0.5]                      # coefficient of lateral earth pressures at rest
 
 Test_File     = "DSS_cyclic_undrained.f2fis"
@@ -51,6 +46,12 @@ for Dr_i in Dr:
         for alpha_i in alpha:
             for Ko_i in Ko:
                 # First create a file name 
+                
+                if alpha_i == 0.0:
+                    FirstCallFlag = 0
+                else:
+                    FirstCallFlag = 1
+
                 BaseFile = TestName + Soil+"_cyc"+"_Dr"+str(int(Dr_i*100))+"_sig"+str(sig_vc_i)+"_a"+str(alpha_i)+"_Ko"+str(Ko_i)
                 FileName = BaseFile + ".f2fis"
 
@@ -67,6 +68,7 @@ for Dr_i in Dr:
                 fileID.write("fish def $var_inputs\n")
                 fileID.write("\t$Dr          = " + str(Dr_i) + " \n")
                 fileID.write("\t$static_bias = " + str(alpha_i) + " \n")
+                fileID.write("\t$flag_on_FirstCall = " + str(FirstCallFlag) + " \n")
                 fileID.write("\t$confinement = " + str(sig_vc_i) + " \n")
                 fileID.write("\t$Ko          = " + str(Ko_i) + " \n")
                 fileID.write("\t$basefile    = \'" + BaseFile + "\' \n")
