@@ -23,7 +23,14 @@ model new
 model title "Cyclic undrained DSS (batched)"
 model configure dynamic 
 model configure fluid 
-model configure plugins
 model large-strain off
-
 program echo off
+
+def _version_checking
+   if version.code.major = 900
+      command
+       model configure plugins
+      endcommand
+   endif
+end
+[_version_checking]
