@@ -18,6 +18,9 @@ Created on Thursday Feb1 08:03:57 2024
 - only the batch_undrainedDSS_cyc***.f2fis file needs to be called by FLAC2D
 - CAUTION: file naming conventions intimately related to post-processing & plotting protocols
 """
+import os
+# Get absolute path to the directory where this script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
 #------------------------------------------------------------------------------
 # Input Parameters - Example
 #------------------------------------------------------------------------------
@@ -34,8 +37,8 @@ alpha   = [0.0,0.1,0.2,0.3]          # static shear stress bias ratio
 Ko       = [0.3,0.8,1.2]              # coefficient of lateral earth pressures at rest
 #Ko      = [0.5]                      # coefficient of lateral earth pressures at rest
 
-Test_File     = "DSS_cyclic_undrained.f2fis"
-Template_File = "templ_uDSScyc.f2fis"
+Test_File     = os.path.join(script_dir, "DSS_cyclic_undrained.f2fis")
+Template_File = os.path.join(script_dir, "templ_uDSScyc.f2fis")
 
 # Initialize lines for final batch file
 call_line   = 'program call \'#\'\n'
