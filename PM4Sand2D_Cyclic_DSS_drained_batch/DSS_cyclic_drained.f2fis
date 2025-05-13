@@ -134,7 +134,20 @@ end
 ;   Create initial grid and initialize with 1D vertical loading
 ;
 zone create2d quadrilateral size 9 1 
-zone cmodel assign null range id-list 2 4 6 8
+
+fish def _nulling_depending_on_version
+    if version.code.major = 900 then
+        command
+            zone cmodel assign null range id-list 2 4 6 8
+        endcommand
+    else
+        command
+            zone null range id-list 2 4 6 8
+        endcommand
+    endif
+end
+[_nulling_depending_on_version]
+
 zone cmodel assign pm4sand2d range id-list 1 3 5 7 9 
 zone group "soil" range id-list 1 3 5 7 9
 zone face skin
@@ -181,15 +194,28 @@ zone property ...
 ;
 ;--------------------------------------------------------------------------------------------------
 ;   Water properties and porosity
-;
-zone fluid cmodel assign isotropic range group "soil"
-zone fluid property porosity [$poros] range group "soil"
+;--------------------------------------------------------------------------------------------------
 
-zone initialize fluid-density [$waterDens] range group "soil"
-zone gridpoint initialize saturation 1.0 range group "soil"
-zone gridpoint initialize fluid-modulus 0 range group "soil"                ; Bulk set to zero for initialization 
-zone gridpoint initialize fluid-tension [$waterTens] range group "soil"
+zone fluid cmodel assign isotropic          range group "soil"
+zone fluid property porosity [_poros]       range group "soil"
+zone initialize fluid-density [_waterDens]  range group "soil"
+zone gridpoint initialize saturation 1.0    range group "soil"
 zone gridpoint initialize pore-pressure 0.0 range group "soil"
+
+fish def _water_depending_on_version
+    if version.code.major = 900
+        command
+           zone gridpoint initialize fluid-modulus 0            range group "soil"   ; Bulk set to zero for initialization        
+           zone gridpoint initialize fluid-tension [_waterTens] range group "soil"
+        endcommand
+    else
+        command
+           zone fluid property fluid-modulus 0               range group "soil"     ; Bulk set to zero for initialization 
+           zone fluid property effective-cutoff [_waterTens] range group "soil"
+        endcommand
+    endif
+end
+[_water_depending_on_version]
 
 ;--------------------------------------------------------------------------------------------------
 ;   Initialize stresses
@@ -263,16 +289,20 @@ zone history name "eps_yy4" strain-increment quantity yy zoneid 7
 zone history name "eps_yy5" strain-increment quantity yy zoneid 9
 
 ;--------------------------------------------------------------------------------------------------
-;   Reset Kwater prior to shearing
+;   Reset Kwater prior to undrained shearing
 ;--------------------------------------------------------------------------------------------------
-fish define $updateKwater
-    if $drained = 0
+fish define _updateKwater
+    if _drained = 0 and version.code.major = 900 then
         command
-            zone gridpoint initialize fluid-modulus [$waterK] range group "soil"
+            zone gridpoint initialize fluid-modulus [_waterK] range group "soil"
         end_command
+    else if _drained = 0
+        command
+            zone fluid property fluid-modulus [_waterK] range group "soil"
+        endcommand
     end_if
 end
-[$updateKwater]
+[_updateKwater]
 
 ;--------------------------------------------------------------------------------------------------
 ;   Reset boundary conditions for DSS shearing
