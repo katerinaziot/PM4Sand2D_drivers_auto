@@ -9,7 +9,7 @@ fish define $input_variables
     $N160   = math.min(46,math.max(2,46*$Dr^2))      ; Calibration to Idriss-Boulanger 2008 
 
     ;$Go    	= 677		; Field: Calibrate to Vs data
-	;____________________________________________________________________________________________________;
+    ;____________________________________________________________________________________________________;
     ;   Assigning hpo : this parameter is varied by user until the desired cyclic strength is obtained   ;
     ;____________________________________________________________________________________________________;
     ; Here assigned given that model has been calibrated
@@ -120,7 +120,19 @@ end
 ;   Create initial grid and initialize with 1D vertical loading
 ;----------------------------------------------------------------------------------------------
 zone create2d quadrilateral size 9 1 
-zone cmodel assign null range id-list 2 4 6 8
+
+fish def _nulling_depending_on_version
+    if version.code.major = 900 then
+        command
+            zone cmodel assign null range id-list 2 4 6 8
+        endcommand
+    else
+        command
+            zone null range id-list 2 4 6 8
+        endcommand
+    endif
+end
+
 zone cmodel assign pm4sand2d range id-list 1 3 5 7 9 
 zone group "soil" range id-list 1 3 5 7 9
 zone face skin
@@ -168,14 +180,27 @@ zone property ...
 ;--------------------------------------------------------------------------------------------------
 ;   Water properties and porosity
 ;--------------------------------------------------------------------------------------------------
-zone fluid cmodel assign isotropic range group "soil"
-zone fluid property porosity [$poros] range group "soil"
 
-zone initialize fluid-density [$waterDens] range group "soil"
-zone gridpoint initialize saturation 1.0 range group "soil"
-zone gridpoint initialize fluid-modulus 0 range group "soil"                ; Bulk set to zero for initialization 
-zone gridpoint initialize fluid-tension [$waterTens] range group "soil"
+zone fluid cmodel assign isotropic          range group "soil"
+zone fluid property porosity [_poros]       range group "soil"
+zone initialize fluid-density [_waterDens]  range group "soil"
+zone gridpoint initialize saturation 1.0    range group "soil"
 zone gridpoint initialize pore-pressure 0.0 range group "soil"
+
+fish def _water_depending_on_version
+    if version.code.major = 900
+        command
+           zone gridpoint initialize fluid-modulus 0            range group "soil"   ; Bulk set to zero for initialization        
+           zone gridpoint initialize fluid-tension [_waterTens] range group "soil"
+        endcommand
+    else
+        command
+           zone fluid property fluid-modulus 0               range group "soil"     ; Bulk set to zero for initialization 
+           zone fluid property effective-cutoff [_waterTens] range group "soil"
+        endcommand
+    endif
+end
+[_water_depending_on_version]
 
 ;--------------------------------------------------------------------------------------------------
 ;   Initialize stresses
@@ -196,6 +221,8 @@ zone face apply stress-normal [$sigvo] range group "Top5"
 ;--------------------------------------------------------------------------------------------------
 ;	Solve for equilibrium in static mode and then in dynamic
 ;   -  Also sets initial back-stresses and other history terms for model
+;--------------------------------------------------------------------------------------------------
+model fluid active off
 model dynamic active off
 model solve
 ;model save "initial"
@@ -208,6 +235,7 @@ solve  ; Establishes dt for use in computing the loading rate below
 ;   Reset boundary conditions for DSS shearing
 ;	-  Attaching grippoints requires knowing the gridpoint ID or getting the ID from its coordinates
 ;	-  Getting the ID requires first getting a pointer given the coordinates, and then the ID given the pointer
+;--------------------------------------------------------------------------------------------------
 zone attach gridpointid [gp.id(gp.near(0.0,1.0))] to-gridpointid [gp.id(gp.near(1.0,1.0))] 
 zone attach gridpointid [gp.id(gp.near(2.0,1.0))] to-gridpointid [gp.id(gp.near(3.0,1.0))] 
 zone attach gridpointid [gp.id(gp.near(4.0,1.0))] to-gridpointid [gp.id(gp.near(5.0,1.0))] 
@@ -248,16 +276,20 @@ end
 [$apply_static]
 
 ;--------------------------------------------------------------------------------------------------
-;   Reset Kwater prior to further shearing
+;   Reset Kwater prior to undrained shearing
 ;--------------------------------------------------------------------------------------------------
-fish define $updateKwater
-    if $drained = 0
+fish define _updateKwater
+    if _drained = 0 and version.code.major = 900 then
         command
-            zone gridpoint initialize fluid-modulus [$waterK] range group "soil"
+            zone gridpoint initialize fluid-modulus [_waterK] range group "soil"
         end_command
+    else if _drained = 0
+        command
+            zone fluid property fluid-modulus [_waterK] range group "soil"
+        endcommand
     end_if
 end
-[$updateKwater]
+[_updateKwater]
 
 ;--------------------------------------------------------------------------------------------------
 ;   Resets prior to starting cyclic loading
