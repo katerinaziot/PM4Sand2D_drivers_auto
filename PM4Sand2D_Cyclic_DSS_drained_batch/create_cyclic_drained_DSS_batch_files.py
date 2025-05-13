@@ -23,6 +23,8 @@ Created on Thursday Feb1 08:03:57 2024
 - only batch_drainedDSS_***.f2fis file needs to be called by FLAC2D
 - CAUTION: file naming conventions intimately related to post-processing & plotting protocols
 """
+import os 
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Input Parameters
 Soil     = ""
@@ -38,8 +40,8 @@ gamma_count = [8]                   # Stop at this value in limit array(10) [ind
 # Dictionary that matches strain array index to actual maximum strain reached in driver
 gamma_dict = {1:"0.0003%",2:"0.001%",3:"0.003%",4:"0.01%",5:"0.03%",6:"0.1%",7:"0.3%",8:"1%",9:"3%",10:"10%"}
 
-Test_File     = "DSS_cyclic_drained.f2fis"
-Template_File = "templ_drDSScyc.f2fis"
+Test_File     = os.path.join(script_dir, "DSS_cyclic_drained.f2fis")
+Template_File = os.path.join(script_dir, "templ_drDSScyc.f2fis")
 
 # Initialize lines for final batch file
 call_line   = 'program call \'#\'\n'
@@ -51,7 +53,7 @@ if volumetric  != 1:
           for gamma_count_i in gamma_count:
                 # First create a file name 
                 BaseFile = TestName+Soil+ "_MRD" + "_Dr" +str(int(Dr_i*100))+"_Ncyc"+str(Ncyc_i)+"_max"+str(gamma_dict[gamma_count_i])
-                FileName = BaseFile+".f2fis"
+                FileName = os.path.join(script_dir, BaseFile + ".f2fis")
 
                 # Create a new file and open template and test file
                 fileID 			= open(FileName,"w+");
@@ -82,14 +84,16 @@ if volumetric  != 1:
                 Template_fileId.close()
                 fileID.close()
                 batch_lines.append(call_line.replace("#", FileName))
-  batch_file = open("batch_drainedDSS_MRD.f2fis", "w")
+
+  batch_file_path = os.path.join(script_dir, "batch_drainedDSS_MRD.f2fis")
+  batch_file = open(batch_file_path, "w")
 
 else:
   for Dr_i in Dr:
       for Ncyc_i in Ncyc:
                 # First create a file name 
                 BaseFile = TestName+ Soil +"_vol"+ "_Dr"+str(int(Dr_i*100))+"_Ncyc"+str(Ncyc_i)+"_max"+str(gamma_dict[8])
-                FileName = BaseFile+".f2fis"
+                FileName = os.path.join(script_dir, BaseFile + ".f2fis")
 
                 # Create a new file and open template and test file
                 fileID          = open(FileName,"w+");
@@ -120,8 +124,9 @@ else:
                 Template_fileId.close()
                 fileID.close()
                 batch_lines.append(call_line.replace("#", FileName))
-  batch_file = open("batch_drainedDSS_vol.f2fis", "w")
 
+  batch_file_path = os.path.join(script_dir, "batch_drainedDSS_vol.f2fis")
+  batch_file = open(batch_file_path, "w")
 
 batch_file.write(";-----------------------------------------------------------------------\n")
 batch_file.write(";                     FLAC batch calling of input files                 \n")
