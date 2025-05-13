@@ -56,7 +56,7 @@ for Dr_i in Dr:
                     FirstCallFlag = 1
 
                 BaseFile = TestName + Soil+"_cyc"+"_Dr"+str(int(Dr_i*100))+"_sig"+str(sig_vc_i)+"_a"+str(alpha_i)+"_Ko"+str(Ko_i)
-                FileName = BaseFile + ".f2fis"
+                FileName = os.path.join(script_dir, BaseFile + ".f2fis")
 
                 # Create a new file and open template and test file
                 fileID 			= open(FileName,"w+");
@@ -90,7 +90,8 @@ for Dr_i in Dr:
                 fileID.close()
                 batch_lines.append(call_line.replace("#", FileName))
 
-batch_file = open("batch_undrainedDSS_cyc.f2fis", "w")
+batch_file_path = os.path.join(script_dir, "batch_undrainedDSS_cyc.f2fis")
+batch_file = open(batch_file_path, "w")
 
 batch_file.write(";-----------------------------------------------------------------------\n")
 batch_file.write(";                     FLAC batch calling of input files                 \n")
