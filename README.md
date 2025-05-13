@@ -1,6 +1,9 @@
 # PM4Sand2D_drivers_auto
 ## Scripts that produce multiple PM4Sand2D drivers for different loading paths, batch files for running them in FLAC 2D/9.00, and post-processing codes for plotting
 
+### May 2025 updates:
+- Added OS-based reading and writing of files in order to avoid path issues in IDEs
+
 ### April 2024 updates:
 - Added extra flag for activating /deactivating FirstCall after static bias in undrained cyclic driver
 - fixes in plotting files
