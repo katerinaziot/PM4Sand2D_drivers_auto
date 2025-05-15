@@ -17,6 +17,8 @@ Created on Wed Jun 22 23:15:13 2022
     examples are provided at each location where it is used. If no files found 
     to meet criteria then plots will come out empty (this could mean the files
     are not there or the filter criteria where not setup appropriately)
+- assumes that exported FLAC driver results (csv files) are under dedicated results
+  folder, within 'PM4Sand2D_Cyclic_DSS_drained_batch' folder
 """
 
 import numpy as np
