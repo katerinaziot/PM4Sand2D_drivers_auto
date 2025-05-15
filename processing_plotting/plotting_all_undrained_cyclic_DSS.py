@@ -577,16 +577,16 @@ for ind, file in enumerate(forKalpha_Fig410):
         [ind_ru, amp_ru, ru_x, ru_y] = power_fit(df,'Ncyc_to_3%_strain','CSR',10)
         CSR_15cyc = min(15, amp_ru*15**ind_ru)
         
-        df_summary['dens'][ind]   = int(density)
-        df_summary['sig'][ind]    = int(sig)
-        df_summary['alpha'][ind]  = float(alf)
-        df_summary['csr_3p'][ind] = CSR_15cyc
+        df_summary.loc[ind,'dens']   = int(density)
+        df_summary.loc[ind,'sig']    = int(sig)
+        df_summary.loc[ind,'alpha']  = float(alf)
+        df_summary.loc[ind,'csr_3p'] = CSR_15cyc
     else:
         print("Not enough points in file to create fit. CSR = 0 automatically. {}".format(file))
-        df_summary['dens'][ind]   = int(density)
-        df_summary['sig'][ind]    = int(sig)
-        df_summary['alpha'][ind]  = float(alf)
-        df_summary['csr_3p'][ind] = 0
+        df_summary.loc[ind,'dens']   = int(density)
+        df_summary.loc[ind,'sig']    = int(sig)
+        df_summary.loc[ind,'alpha']  = float(alf)
+        df_summary.loc[ind,'csr_3p'] = 0
         
 df_summary.sort_values(by=['alpha'], inplace = True)
 
