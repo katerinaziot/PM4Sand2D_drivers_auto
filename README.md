@@ -3,8 +3,9 @@
 
 ### May 2025 updates:
 - Added OS-based reading and writing of files in order to avoid path issues in IDEs
-- improvements in path handling for IDEs
-
+- improvements in plotting utilities
+- updated Drivers to work with both perpetual (9.0) and subscription (9.X) FLAC licenses
+  
 ### April 2024 updates:
 - Added extra flag for activating /deactivating FirstCall after static bias in undrained cyclic driver
 - fixes in plotting files
