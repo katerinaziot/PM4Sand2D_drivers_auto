@@ -3,6 +3,7 @@
 
 ### May 2025 updates:
 - Added OS-based reading and writing of files in order to avoid path issues in IDEs
+- improvements in path handling for IDEs
 
 ### April 2024 updates:
 - Added extra flag for activating /deactivating FirstCall after static bias in undrained cyclic driver
