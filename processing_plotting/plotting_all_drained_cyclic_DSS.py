@@ -196,7 +196,7 @@ for k,density in enumerate(['35', '55', '75']):
 # Number of cycles applied and one for the strain at which the elements were exercised
 # Element 2 is kept for 100 kPa (can be changed, colors and annotations will be updated)
 
-fig_420_files = create_file_list(all_files,[],['vol'],[],[],[['20'],['1']],['2'])
+fig_420_files = create_file_list(all_files,[],['vol'],[],[],[['20'],['1%']],['2'])
 
 # Create empty plot 
 fig, axs = plt.subplots(nrows = 1, ncols = 3, figsize=(8,4), squeeze = False)
