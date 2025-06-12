@@ -32,9 +32,9 @@ TestName = "uDSS"    # will match template and Driver and built upon that
 
 Dr       = [0.35, 0.55, 0.75]         # Relative Density
 sig_vc   = [1,4,8]                    # initial overburden stress
-alpha   = [0.0,0.1,0.2,0.3]          # static shear stress bias ratio
-#alpha    = [0.0]                      # static shear stress bias ratio
-Ko       = [0.3,0.8,1.2]              # coefficient of lateral earth pressures at rest
+alpha    = [0.0,0.1,0.2,0.3]          # static shear stress bias ratio
+#alpha   = [0.0]                      # static shear stress bias ratio
+Ko       = [0.3,0.5,0.8,1.2]          # coefficient of lateral earth pressures at rest
 #Ko      = [0.5]                      # coefficient of lateral earth pressures at rest
 
 Test_File     = os.path.join(script_dir, "DSS_cyclic_undrained.f2fis")
@@ -57,6 +57,8 @@ for Dr_i in Dr:
 
                 BaseFile = TestName + Soil+"_cyc"+"_Dr"+str(int(Dr_i*100))+"_sig"+str(sig_vc_i)+"_a"+str(alpha_i)+"_Ko"+str(Ko_i)
                 FileName = os.path.join(script_dir, BaseFile + ".f2fis")
+                FileName_in_BatchFile = os.path.join(BaseFile + ".f2fis")
+
 
                 # Create a new file and open template and test file
                 fileID 			= open(FileName,"w+");
@@ -68,27 +70,27 @@ for Dr_i in Dr:
                 fileID.write("\n\n")
 
                 fileID.write(";------------GENERAL INPUT CONDITIONS------------\n")
-                fileID.write("fish def $var_inputs\n")
-                fileID.write("\t$Dr          = " + str(Dr_i) + " \n")
-                fileID.write("\t$static_bias = " + str(alpha_i) + " \n")
-                fileID.write("\t$flag_on_FirstCall = " + str(FirstCallFlag) + " \n")
-                fileID.write("\t$confinement = " + str(sig_vc_i) + " \n")
-                fileID.write("\t$Ko          = " + str(Ko_i) + " \n")
-                fileID.write("\t$basefile    = \'" + BaseFile + "\' \n")
+                fileID.write("fish def _var_inputs\n")
+                fileID.write("\t_Dr          = " + str(Dr_i) + " \n")
+                fileID.write("\t_static_bias = " + str(alpha_i) + " \n")
+                fileID.write("\t_flag_on_FirstCall = " + str(FirstCallFlag) + " \n")
+                fileID.write("\t_confinement = " + str(sig_vc_i) + " \n")
+                fileID.write("\t_Ko          = " + str(Ko_i) + " \n")
+                fileID.write("\t_basefile    = \'" + BaseFile + "\' \n")
                 fileID.write("end \n");
-                fileID.write("[$var_inputs]\n\n")
+                fileID.write("[_var_inputs]\n\n")
 
                 fileID.write(Test_fileId.read())
 
                 fileID.write(";-------------Footer-------------------\n")
-                fileID.write(";save @$savefile\n")
+                fileID.write(";save @_savefile\n")
                 fileID.write(";--------------------------------------\n")
 
                 # Closing the files
                 Test_fileId.close()
                 Template_fileId.close()
                 fileID.close()
-                batch_lines.append(call_line.replace("#", FileName))
+                batch_lines.append(call_line.replace("#", FileName_in_BatchFile))
 
 batch_file_path = os.path.join(script_dir, "batch_undrainedDSS_cyc.f2fis")
 batch_file = open(batch_file_path, "w")
