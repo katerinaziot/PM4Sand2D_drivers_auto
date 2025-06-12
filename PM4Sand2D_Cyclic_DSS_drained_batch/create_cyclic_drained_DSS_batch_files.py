@@ -32,9 +32,9 @@ TestName = "dDSS" # will match template Driver and built upon that
 
 # Create arrays of values to be varied across all Drivers
 # Produced files will be named accordingly
-volumetric  = 1
+volumetric  = 0
 Dr          = [0.35, 0.55, 0.75]    # Relative Density
-Ncyc        = [20]                   # Number of Cycles to be performed at each strain
+Ncyc        = [2]                   # Number of Cycles to be performed at each strain
 gamma_count = [8]                   # Stop at this value in limit array(10) [index in array]
 
 # Dictionary that matches strain array index to actual maximum strain reached in driver
@@ -54,6 +54,7 @@ if volumetric  != 1:
                 # First create a file name 
                 BaseFile = TestName+Soil+ "_MRD" + "_Dr" +str(int(Dr_i*100))+"_Ncyc"+str(Ncyc_i)+"_max"+str(gamma_dict[gamma_count_i])
                 FileName = os.path.join(script_dir, BaseFile + ".f2fis")
+                FileName_in_BatchFile = os.path.join(BaseFile + ".f2fis")
 
                 # Create a new file and open template and test file
                 fileID 			= open(FileName,"w+");
@@ -83,7 +84,7 @@ if volumetric  != 1:
                 Test_fileId.close()
                 Template_fileId.close()
                 fileID.close()
-                batch_lines.append(call_line.replace("#", FileName))
+                batch_lines.append(call_line.replace("#", FileName_in_BatchFile))
 
   batch_file_path = os.path.join(script_dir, "batch_drainedDSS_MRD.f2fis")
   batch_file = open(batch_file_path, "w")
@@ -94,6 +95,7 @@ else:
                 # First create a file name 
                 BaseFile = TestName+ Soil +"_vol"+ "_Dr"+str(int(Dr_i*100))+"_Ncyc"+str(Ncyc_i)+"_max"+str(gamma_dict[8])
                 FileName = os.path.join(script_dir, BaseFile + ".f2fis")
+                FileName_in_BatchFile = os.path.join(BaseFile + ".f2fis")
 
                 # Create a new file and open template and test file
                 fileID          = open(FileName,"w+");
@@ -123,7 +125,7 @@ else:
                 Test_fileId.close()
                 Template_fileId.close()
                 fileID.close()
-                batch_lines.append(call_line.replace("#", FileName))
+                batch_lines.append(call_line.replace("#", FileName_in_BatchFile))
 
   batch_file_path = os.path.join(script_dir, "batch_drainedDSS_vol.f2fis")
   batch_file = open(batch_file_path, "w")
