@@ -66,18 +66,18 @@ if volumetric  != 1:
                 fileID.write("\n\n")
 
                 fileID.write(";------------GENERAL INPUT CONDITIONS------------\n")
-                fileID.write("fish def $var_inputs\n")
-                fileID.write("\t$Dr           = " + str(Dr_i) + " \n")
-                fileID.write("\t$nCycles      = " + str(Ncyc_i) + " \n")
-                fileID.write("\t$strainCount  = " + str(gamma_count_i) + " \n")
-                fileID.write("\t$basefile     = \'" + BaseFile + "\' \n")
+                fileID.write("fish def _var_inputs\n")
+                fileID.write("\t_Dr           = " + str(Dr_i) + " \n")
+                fileID.write("\t_nCycles      = " + str(Ncyc_i) + " \n")
+                fileID.write("\t_strainCount  = " + str(gamma_count_i) + " \n")
+                fileID.write("\t_basefile     = \'" + BaseFile + "\' \n")
                 fileID.write("end \n");
-                fileID.write("[$var_inputs]\n\n")
+                fileID.write("[_var_inputs]\n\n")
 
                 fileID.write(Test_fileId.read())
 
                 fileID.write(";-------------Footer-------------------\n")
-                fileID.write(";save @$savefile\n")
+                fileID.write(";save @_savefile\n")
                 fileID.write(";--------------------------------------\n")
 
                 # Closing the files
@@ -107,18 +107,18 @@ else:
                 fileID.write("\n\n")
 
                 fileID.write(";------------GENERAL INPUT CONDITIONS------------\n")
-                fileID.write("fish def $var_inputs\n")
-                fileID.write("\t$Dr           = " + str(Dr_i) + " \n")
-                fileID.write("\t$nCycles      = " + str(Ncyc_i) + " \n")
-                fileID.write("\t$strainCount = 1                   \n")
-                fileID.write("\t$basefile     = \'" + BaseFile + "\' \n")
+                fileID.write("fish def _var_inputs\n")
+                fileID.write("\t_Dr           = " + str(Dr_i) + " \n")
+                fileID.write("\t_nCycles      = " + str(Ncyc_i) + " \n")
+                fileID.write("\t_strainCount = 1                   \n")
+                fileID.write("\t_basefile     = \'" + BaseFile + "\' \n")
                 fileID.write("end \n");
-                fileID.write("[$var_inputs]\n\n")
+                fileID.write("[_var_inputs]\n\n")
 
                 fileID.write(Test_fileId.read())
 
                 fileID.write(";-------------Footer-------------------\n")
-                fileID.write(";save @$savefile\n")
+                fileID.write(";save @_savefile\n")
                 fileID.write(";--------------------------------------\n")
 
                 # Closing the files
