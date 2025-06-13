@@ -239,6 +239,7 @@ zone face apply stress-normal [-_sigv(5)*_Pa] range group "Top5"
 ;	Solve for equilibrium
 ;
 model dynamic active off
+model fluid active off
 model solve
 ;--------------------------------------------------------------------------------------------------
 ;   Histories to be recorded
