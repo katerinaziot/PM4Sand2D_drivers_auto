@@ -5,6 +5,8 @@
 - Added OS-based reading and writing of files in order to avoid path issues in IDEs
 - improvements in plotting utilities
 - updated Drivers to work with both perpetual (9.0) and subscription (9.X) FLAC licenses
+- updated variable names to be listed in FLAC's fish console
+- sometimes FLAC gives a 'bad parameter' warning when running the batch file without an obvious reason. Rerunning or adding spaces between lines fixes it.
   
 ### April 2024 updates:
 - Added extra flag for activating /deactivating FirstCall after static bias in undrained cyclic driver
